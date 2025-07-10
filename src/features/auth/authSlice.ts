@@ -1,9 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface User {
+export interface User {
   id: string;
   username: string;
   name: string;
+  email: string;
+  password: string; // In a real app, this should be hashed
+}
+
+export interface RegisteredUser {
+  id: string;
+  username: string;
+  name: string;
+  email: string;
+  password: string;
 }
 
 interface AuthState {
@@ -11,7 +21,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  isSignUpMode: boolean;
+  registeredUsers: RegisteredUser[];
 }
 
 const initialState: AuthState = {
@@ -19,28 +29,33 @@ const initialState: AuthState = {
   isAuthenticated: false,
   isLoading: false,
   error: null,
-  isSignUpMode: true,
+  registeredUsers: [
+    // Pre-populate with some demo users
+    {
+      id: '1',
+      username: 'demo',
+      name: 'Demo User',
+      email: 'demo@example.com',
+      password: 'demo123',
+    },
+  ],
 };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setSignUpMode: (state, action: PayloadAction<boolean>) => {
-      state.isSignUpMode = action.payload;
-      state.error = null;
-    },
-    signUpStart: (state) => {
+    registerStart: (state) => {
       state.isLoading = true;
       state.error = null;
     },
-    signUpSuccess: (state, action: PayloadAction<User>) => {
+    registerSuccess: (state, action: PayloadAction<RegisteredUser>) => {
       state.isLoading = false;
-      state.isAuthenticated = true;
-      state.user = action.payload;
       state.error = null;
+      // Add the new user to registered users
+      state.registeredUsers.push(action.payload);
     },
-    signUpFailure: (state, action: PayloadAction<string>) => {
+    registerFailure: (state, action: PayloadAction<string>) => {
       state.isLoading = false;
       state.error = action.payload;
     },
@@ -69,15 +84,15 @@ const authSlice = createSlice({
   },
 });
 
-export const { 
-  setSignUpMode,
-  signUpStart, 
-  signUpSuccess, 
-  signUpFailure,
-  loginStart, 
-  loginSuccess, 
-  loginFailure, 
-  logout, 
-  clearError 
+export const {
+  registerStart,
+  registerSuccess,
+  registerFailure,
+  loginStart,
+  loginSuccess,
+  loginFailure,
+  logout,
+  clearError,
 } = authSlice.actions;
+
 export default authSlice.reducer; 

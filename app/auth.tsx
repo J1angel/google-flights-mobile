@@ -1,136 +1,181 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../src/store';
-import { 
-  loginStart, 
-  loginSuccess, 
-  loginFailure, 
-  signUpStart, 
-  signUpSuccess, 
-  signUpFailure,
-  setSignUpMode 
-} from '../src/features/auth/authSlice';
-import { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { registerUser, loginUser } from '../src/features/auth/authActions';
+import { clearError } from '../src/features/auth/authSlice';
+import LoadingSpinner from '../src/components/LoadingSpinner';
 
 export default function Auth() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const auth = useAppSelector((state) => state.auth);
 
+  const [isSignUpMode, setIsSignUpMode] = useState(true);
   const [formData, setFormData] = useState({
-    name: '',
     username: '',
+    name: '',
     password: '',
+    confirmPassword: '',
   });
 
-  const handleSignUp = () => {
-    if (!formData.name || !formData.username || !formData.password) {
-      dispatch(signUpFailure('Please fill in all fields'));
-      return;
+  // Redirect to home if already authenticated
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      router.replace('/home');
     }
+  }, [auth.isAuthenticated, router]);
 
-    if (formData.password.length < 6) {
-      dispatch(signUpFailure('Password must be at least 6 characters'));
-      return;
-    }
+  // Clear error when switching modes
+  useEffect(() => {
+    dispatch(clearError());
+  }, [isSignUpMode, dispatch]);
 
-    dispatch(signUpStart());
-    setTimeout(() => {
-      const userData = {
-        id: '1',
-        username: formData.username,
-        name: formData.name
-      };
-      dispatch(signUpSuccess(userData));
-      setFormData({ name: '', username: '', password: '' });
-    }, 1000);
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleLogin = () => {
-    if (!formData.username || !formData.password) {
-      dispatch(loginFailure('Please fill in username and password'));
-      return;
+  const handleSubmit = () => {
+    if (isSignUpMode) {
+      // Registration
+      if (formData.password !== formData.confirmPassword) {
+        Alert.alert('Error', 'Passwords do not match');
+        return;
+      }
+      
+      dispatch(registerUser(
+        formData.username,
+        formData.name,
+        formData.password
+      ));
+    } else {
+      // Login
+      dispatch(loginUser(formData.username, formData.password));
     }
-
-    dispatch(loginStart());
-    setTimeout(() => {
-      const userData = {
-        id: '1',
-        username: formData.username,
-        name: 'John Doe'
-      };
-      dispatch(loginSuccess(userData));
-      setFormData({ name: '', username: '', password: '' });
-    }, 1000);
   };
 
   const toggleMode = () => {
-    dispatch(setSignUpMode(!auth.isSignUpMode));
-    setFormData({ name: '', username: '', password: '' });
+    setIsSignUpMode(!isSignUpMode);
+    setFormData({
+      username: '',
+      name: '',
+      password: '',
+      confirmPassword: '',
+    });
+  };
+
+  const isFormValid = () => {
+    if (isSignUpMode) {
+      return formData.username.trim() && 
+             formData.name.trim() && 
+             formData.password.trim() && 
+             formData.confirmPassword.trim() &&
+             formData.password === formData.confirmPassword;
+    } else {
+      return formData.username.trim() && formData.password.trim();
+    }
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>
-        {auth.isSignUpMode ? 'Create Account' : 'Welcome Back'}
-      </Text>
-      
-      <View style={styles.authContainer}>
-        {auth.isSignUpMode && (
+      <View style={styles.header}>
+        <Text style={styles.title}>Google Flights</Text>
+        <Text style={styles.subtitle}>
+          {isSignUpMode ? 'Create your account' : 'Welcome back'}
+        </Text>
+      </View>
+
+      <View style={styles.form}>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Username</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter username"
+            value={formData.username}
+            onChangeText={(text) => handleInputChange('username', text)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </View>
+
+        {isSignUpMode && (
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Full Name</Text>
             <TextInput
               style={styles.input}
               placeholder="Enter your full name"
               value={formData.name}
-              onChangeText={(text) => setFormData({ ...formData, name: text })}
+              onChangeText={(text) => handleInputChange('name', text)}
               autoCapitalize="words"
             />
           </View>
         )}
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Username</Text>
+          <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter your username"
-            value={formData.username}
-            onChangeText={(text) => setFormData({ ...formData, username: text })}
-            keyboardType="default"
+            placeholder="Enter password"
+            value={formData.password}
+            onChangeText={(text) => handleInputChange('password', text)}
+            secureTextEntry
             autoCapitalize="none"
           />
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your password"
-            value={formData.password}
-            onChangeText={(text) => setFormData({ ...formData, password: text })}
-            secureTextEntry
-          />
-        </View>
+        {isSignUpMode && (
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Confirm Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm password"
+              value={formData.confirmPassword}
+              onChangeText={(text) => handleInputChange('confirmPassword', text)}
+              secureTextEntry
+              autoCapitalize="none"
+            />
+          </View>
+        )}
 
-        <Button 
-          title={auth.isLoading 
-            ? (auth.isSignUpMode ? "Creating Account..." : "Signing In...") 
-            : (auth.isSignUpMode ? "Sign Up" : "Sign In")
-          } 
-          onPress={auth.isSignUpMode ? handleSignUp : handleLogin}
-          disabled={auth.isLoading}
-        />
+        {auth.error && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{auth.error}</Text>
+          </View>
+        )}
 
-        {auth.error && <Text style={styles.error}>Error: {auth.error}</Text>}
+        <TouchableOpacity
+          style={[styles.submitButton, (!isFormValid() || auth.isLoading) && styles.disabledButton]}
+          onPress={handleSubmit}
+          disabled={!isFormValid() || auth.isLoading}
+        >
+          {auth.isLoading ? (
+            <LoadingSpinner message={isSignUpMode ? "Creating account..." : "Signing in..."} />
+          ) : (
+            <Text style={styles.submitButtonText}>
+              {isSignUpMode ? 'Create Account' : 'Sign In'}
+            </Text>
+          )}
+        </TouchableOpacity>
 
-        <View style={styles.toggleContainer}>
-          <Text style={styles.toggleText}>
-            {auth.isSignUpMode ? "Already have an account?" : "Don't have an account?"}
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchText}>
+            {isSignUpMode ? 'Already have an account?' : "Don't have an account?"}
           </Text>
-          <Button 
-            title={auth.isSignUpMode ? "Sign In" : "Sign Up"} 
-            onPress={toggleMode}
-          />
+          <TouchableOpacity onPress={toggleMode}>
+            <Text style={styles.switchButton}>
+              {isSignUpMode ? 'Sign In' : 'Sign Up'}
+            </Text>
+          </TouchableOpacity>
         </View>
+
+        {!isSignUpMode && (
+          <View style={styles.demoContainer}>
+            <Text style={styles.demoTitle}>Demo Account</Text>
+            <Text style={styles.demoText}>Username: demo</Text>
+            <Text style={styles.demoText}>Password: demo123</Text>
+          </View>
+        )}
       </View>
 
       <StatusBar style="auto" />
@@ -142,58 +187,107 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-    padding: 20,
+  },
+  header: {
+    backgroundColor: '#007bff',
     paddingTop: 60,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    color: '#333',
+    color: '#fff',
+    marginBottom: 10,
   },
-  authContainer: {
-    backgroundColor: '#fff',
+  subtitle: {
+    fontSize: 16,
+    color: '#e3f2fd',
+    textAlign: 'center',
+  },
+  form: {
     padding: 20,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   inputGroup: {
-    marginBottom: 15,
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 5,
+    marginBottom: 8,
     color: '#333',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    padding: 12,
+    padding: 15,
     fontSize: 16,
     backgroundColor: '#fff',
   },
-  toggleContainer: {
-    marginTop: 20,
-    alignItems: 'center',
+  errorContainer: {
+    backgroundColor: '#ffebee',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#ffcdd2',
   },
-  toggleText: {
+  errorText: {
+    color: '#c62828',
     fontSize: 14,
-    color: '#666',
-    marginBottom: 10,
-  },
-  error: {
-    color: 'red',
-    marginTop: 10,
     textAlign: 'center',
+  },
+  submitButton: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  disabledButton: {
+    backgroundColor: '#ccc',
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  switchText: {
+    color: '#666',
+    fontSize: 14,
+    marginRight: 5,
+  },
+  switchButton: {
+    color: '#007bff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  demoContainer: {
+    backgroundColor: '#e3f2fd',
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#bbdefb',
+  },
+  demoTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1976d2',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  demoText: {
+    fontSize: 14,
+    color: '#424242',
+    textAlign: 'center',
+    marginBottom: 2,
   },
 }); 
