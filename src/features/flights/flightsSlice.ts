@@ -1,20 +1,12 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-
-interface Flight {
-  id: string;
-  origin: string;
-  destination: string;
-  departureTime: string;
-  arrivalTime: string;
-  price: number;
-  airline: string;
-}
+import { searchFlights, Flight, FlightSearchParams } from '../../services/flightsApi';
 
 interface FlightsState {
   flights: Flight[];
   selectedFlight: Flight | null;
   isLoading: boolean;
   error: string | null;
+  searchParams: FlightSearchParams | null;
 }
 
 const initialState: FlightsState = {
@@ -22,38 +14,23 @@ const initialState: FlightsState = {
   selectedFlight: null,
   isLoading: false,
   error: null,
+  searchParams: null,
 };
 
-// Async thunk for fetching flights
 export const fetchFlights = createAsyncThunk(
   'flights/fetchFlights',
-  async (searchParams: { origin: string; destination: string; date: string }) => {
-    // Simulate API call
-    const response = await new Promise<Flight[]>((resolve) => {
-      setTimeout(() => {
-        resolve([
-          {
-            id: '1',
-            origin: searchParams.origin,
-            destination: searchParams.destination,
-            departureTime: '10:00 AM',
-            arrivalTime: '12:00 PM',
-            price: 299,
-            airline: 'Sample Airlines',
-          },
-          {
-            id: '2',
-            origin: searchParams.origin,
-            destination: searchParams.destination,
-            departureTime: '2:00 PM',
-            arrivalTime: '4:00 PM',
-            price: 349,
-            airline: 'Another Airlines',
-          },
-        ]);
-      }, 1000);
-    });
-    return response;
+  async (searchParams: FlightSearchParams) => {
+    console.log('Fetching flights with params:', searchParams);
+    const response = await searchFlights(searchParams);
+    
+    if (!response.success) {
+      throw new Error(response.error || 'Failed to fetch flights');
+    }
+    
+    return {
+      flights: response.data,
+      searchParams,
+    };
   }
 );
 
@@ -70,6 +47,12 @@ const flightsSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    clearFlights: (state) => {
+      state.flights = [];
+      state.selectedFlight = null;
+      state.error = null;
+      state.searchParams = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -79,7 +62,9 @@ const flightsSlice = createSlice({
       })
       .addCase(fetchFlights.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.flights = action.payload;
+        state.flights = action.payload.flights;
+        state.searchParams = action.payload.searchParams;
+        state.error = null;
       })
       .addCase(fetchFlights.rejected, (state, action) => {
         state.isLoading = false;
@@ -88,5 +73,5 @@ const flightsSlice = createSlice({
   },
 });
 
-export const { selectFlight, clearSelectedFlight, clearError } = flightsSlice.actions;
+export const { selectFlight, clearSelectedFlight, clearError, clearFlights } = flightsSlice.actions;
 export default flightsSlice.reducer; 
