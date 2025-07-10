@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, ScrollView, TextInput, Alert } from 'react-native';
 
 interface DatePickerProps {
   value: string;
@@ -92,10 +92,10 @@ export default function DatePicker({ value, onChange, placeholder = "Select Date
   return (
     <View>
       <TouchableOpacity
-        style={styles.input}
+        className="border border-gray-300 rounded-lg p-3 bg-white"
         onPress={() => setIsVisible(true)}
       >
-        <Text style={[styles.text, !value && styles.placeholder]}>
+        <Text className={`text-base ${!value ? 'text-gray-500' : 'text-gray-800'}`}>
           {formatDisplayDate(value)}
         </Text>
       </TouchableOpacity>
@@ -106,86 +106,86 @@ export default function DatePicker({ value, onChange, placeholder = "Select Date
         animationType="slide"
         onRequestClose={() => setIsVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Travel Date</Text>
+        <View className="flex-1 bg-black/50 justify-center items-center">
+          <View className="bg-white rounded-xl p-5 w-11/12 max-w-sm max-h-4/5">
+            <Text className="text-lg font-bold text-center mb-5 text-gray-800">Select Travel Date</Text>
             
-            <ScrollView style={styles.scrollView}>
+            <ScrollView className="max-h-96">
               {/* Manual Date Input */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Enter Specific Date</Text>
-                <View style={styles.manualInputContainer}>
+              <View className="mb-5">
+                <Text className="text-base font-semibold text-gray-800 mb-2.5 px-1">Enter Specific Date</Text>
+                <View className="flex-row items-center mb-2.5">
                   <TextInput
-                    style={styles.manualInput}
+                    className="flex-1 border border-gray-300 rounded-lg p-3 text-base bg-white mr-2.5"
                     placeholder="YYYY-MM-DD"
                     value={manualDate}
                     onChangeText={setManualDate}
                     keyboardType="numeric"
                   />
                   <TouchableOpacity
-                    style={styles.submitButton}
+                    className="bg-blue-600 px-5 py-3 rounded-lg"
                     onPress={handleManualDateSubmit}
                   >
-                    <Text style={styles.submitText}>Set</Text>
+                    <Text className="text-white text-base font-semibold">Set</Text>
                   </TouchableOpacity>
                 </View>
               </View>
 
               {/* Quick Options */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Quick Options</Text>
+              <View className="mb-5">
+                <Text className="text-base font-semibold text-gray-800 mb-2.5 px-1">Quick Options</Text>
                 
                 <TouchableOpacity
-                  style={[styles.dateOption, isSelected(tomorrow) && styles.selectedOption]}
+                  className={`p-4 border-b border-gray-200 rounded-lg mb-0.5 ${isSelected(tomorrow) ? 'bg-blue-50 border-blue-500 border' : ''}`}
                   onPress={() => selectDate(tomorrow)}
                 >
-                  <Text style={styles.dateText}>Tomorrow</Text>
-                  <Text style={styles.dateSubtext}>{formatDisplayDate(formatDate(tomorrow))}</Text>
+                  <Text className="text-base font-semibold text-gray-800">Tomorrow</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">{formatDisplayDate(formatDate(tomorrow))}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[styles.dateOption, isSelected(nextWeek) && styles.selectedOption]}
+                  className={`p-4 border-b border-gray-200 rounded-lg mb-0.5 ${isSelected(nextWeek) ? 'bg-blue-50 border-blue-500 border' : ''}`}
                   onPress={() => selectDate(nextWeek)}
                 >
-                  <Text style={styles.dateText}>Next Week</Text>
-                  <Text style={styles.dateSubtext}>{formatDisplayDate(formatDate(nextWeek))}</Text>
+                  <Text className="text-base font-semibold text-gray-800">Next Week</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">{formatDisplayDate(formatDate(nextWeek))}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[styles.dateOption, isSelected(nextMonth) && styles.selectedOption]}
+                  className={`p-4 border-b border-gray-200 rounded-lg mb-0.5 ${isSelected(nextMonth) ? 'bg-blue-50 border-blue-500 border' : ''}`}
                   onPress={() => selectDate(nextMonth)}
                 >
-                  <Text style={styles.dateText}>Next Month</Text>
-                  <Text style={styles.dateSubtext}>{formatDisplayDate(formatDate(nextMonth))}</Text>
+                  <Text className="text-base font-semibold text-gray-800">Next Month</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">{formatDisplayDate(formatDate(nextMonth))}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[styles.dateOption, isSelected(next6Months) && styles.selectedOption]}
+                  className={`p-4 border-b border-gray-200 rounded-lg mb-0.5 ${isSelected(next6Months) ? 'bg-blue-50 border-blue-500 border' : ''}`}
                   onPress={() => selectDate(next6Months)}
                 >
-                  <Text style={styles.dateText}>6 Months</Text>
-                  <Text style={styles.dateSubtext}>{formatDisplayDate(formatDate(next6Months))}</Text>
+                  <Text className="text-base font-semibold text-gray-800">6 Months</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">{formatDisplayDate(formatDate(next6Months))}</Text>
                 </TouchableOpacity>
               </View>
 
               {/* Next 30 Days */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Next 30 Days</Text>
+              <View className="mb-5">
+                <Text className="text-base font-semibold text-gray-800 mb-2.5 px-1">Next 30 Days</Text>
                 {next30Days.map((date, index) => (
                   <TouchableOpacity
                     key={index}
-                    style={[
-                      styles.dateOption, 
-                      isSelected(date) && styles.selectedOption,
-                      isToday(date) && styles.todayOption
-                    ]}
+                    className={`p-4 border-b border-gray-200 rounded-lg mb-0.5 ${
+                      isSelected(date) ? 'bg-blue-50 border-blue-500 border' : ''
+                    } ${
+                      isToday(date) ? 'bg-orange-50' : ''
+                    }`}
                     onPress={() => selectDate(date)}
                   >
-                    <Text style={styles.dateText}>
+                    <Text className="text-base font-semibold text-gray-800">
                       {date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                       {isToday(date) && ' (Today)'}
                     </Text>
-                    <Text style={styles.dateSubtext}>
+                    <Text className="text-sm text-gray-600 mt-0.5">
                       {date.toLocaleDateString('en-US', { year: 'numeric' })}
                     </Text>
                   </TouchableOpacity>
@@ -194,127 +194,14 @@ export default function DatePicker({ value, onChange, placeholder = "Select Date
             </ScrollView>
 
             <TouchableOpacity
-              style={styles.cancelButton}
+              className="mt-4 p-4 bg-gray-50 rounded-lg items-center"
               onPress={() => setIsVisible(false)}
             >
-              <Text style={styles.cancelText}>Cancel</Text>
+              <Text className="text-base text-gray-600">Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
     </View>
   );
-}
-
-const styles = StyleSheet.create({
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    backgroundColor: '#fff',
-  },
-  text: {
-    fontSize: 16,
-    color: '#333',
-  },
-  placeholder: {
-    color: '#999',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
-    width: '90%',
-    maxWidth: 350,
-    maxHeight: '80%',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#333',
-  },
-  scrollView: {
-    maxHeight: 400,
-  },
-  section: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 10,
-    paddingHorizontal: 5,
-  },
-  manualInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  manualInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-    marginRight: 10,
-  },
-  submitButton: {
-    backgroundColor: '#007bff',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  submitText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  dateOption: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    borderRadius: 8,
-    marginBottom: 2,
-  },
-  selectedOption: {
-    backgroundColor: '#e3f2fd',
-    borderColor: '#2196f3',
-    borderWidth: 1,
-  },
-  todayOption: {
-    backgroundColor: '#fff3e0',
-  },
-  dateText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  dateSubtext: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
-  },
-  cancelButton: {
-    marginTop: 15,
-    padding: 15,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  cancelText: {
-    fontSize: 16,
-    color: '#666',
-  },
-}); 
+} 

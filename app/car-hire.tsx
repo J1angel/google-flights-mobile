@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Alert, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { Text, View, Alert, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { searchCarLocations, searchCars, CarLocation, CarRental } from '../src/services/carsApi';
 import CalendarPicker from '../src/components/CalendarPicker';
@@ -122,48 +122,48 @@ export default function CarHire() {
     
     const stars = '⭐'.repeat(Math.floor(rating));
     return (
-      <Text style={styles.ratingText}>
+      <Text className="text-xs text-yellow-500 mt-0.5">
         {stars} {rating.toFixed(1)}
       </Text>
     );
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Search Car Rentals</Text>
-        <Text style={styles.subtitle}>Find the perfect car for your trip</Text>
+    <ScrollView className="flex-1 bg-gray-100 p-5">
+      <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
+        <Text className="text-xl font-bold mb-2.5 text-gray-800">Search Car Rentals</Text>
+        <Text className="text-base text-gray-600 mb-5 text-center">Find the perfect car for your trip</Text>
         
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Airport</Text>
+        <View className="mb-4 relative">
+          <Text className="text-base font-semibold mb-1 text-gray-800">Airport</Text>
           <TextInput
-            style={styles.input}
+            className="border border-gray-300 rounded-lg p-3 text-base bg-white"
             placeholder="Enter airport or city"
             value={searchForm.airport}
             onChangeText={handleAirportChange}
             onFocus={() => setShowLocations(true)}
           />
           {showLocations && carLocations.length > 0 && (
-            <View style={styles.locationList}>
+            <View className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg z-50 max-h-48">
               {carLocations.slice(0, 5).map((location) => (
                 <TouchableOpacity
                   key={location.entityId}
-                  style={styles.locationItem}
+                  className="p-3 border-b border-gray-200"
                   onPress={() => selectLocation(location)}
                 >
-                  <Text style={styles.locationName}>{location.name}</Text>
-                  <Text style={styles.locationDetails}>
+                  <Text className="text-base font-semibold text-gray-800">{location.name}</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">
                     {location.cityName}, {location.countryName}
                   </Text>
-                  <Text style={styles.locationType}>{location.type}</Text>
+                  <Text className="text-xs text-gray-500 mt-0.5 capitalize">{location.type}</Text>
                 </TouchableOpacity>
               ))}
             </View>
           )}
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Pickup Date</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold mb-1 text-gray-800">Pickup Date</Text>
           <CalendarPicker
             value={searchForm.pickupDate}
             onChange={(date: string) => setSearchForm({ ...searchForm, pickupDate: date })}
@@ -171,8 +171,8 @@ export default function CarHire() {
           />
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Return Date</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold mb-1 text-gray-800">Return Date</Text>
           <CalendarPicker
             value={searchForm.returnDate}
             onChange={(date: string) => setSearchForm({ ...searchForm, returnDate: date })}
@@ -180,23 +180,23 @@ export default function CarHire() {
           />
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Car Type</Text>
-          <View style={styles.carTypeGrid}>
+        <View className="mb-4">
+          <Text className="text-base font-semibold mb-1 text-gray-800">Car Type</Text>
+          <View className="flex-row flex-wrap justify-between">
             {carTypes.map((type) => (
               <TouchableOpacity
                 key={type.value}
-                style={[
-                  styles.carTypeButton,
-                  searchForm.carType === type.value && styles.selectedCarType
-                ]}
+                className={`w-5/12 p-4 rounded-lg border items-center mb-2.5 ${
+                  searchForm.carType === type.value 
+                    ? 'bg-green-600 border-green-600' 
+                    : 'bg-white border-gray-300'
+                }`}
                 onPress={() => setSearchForm({ ...searchForm, carType: type.value })}
               >
-                <Text style={styles.carTypeIcon}>{type.icon}</Text>
-                <Text style={[
-                  styles.carTypeLabel,
-                  searchForm.carType === type.value && styles.selectedCarTypeText
-                ]}>
+                <Text className="text-2xl mb-1">{type.icon}</Text>
+                <Text className={`text-sm font-semibold ${
+                  searchForm.carType === type.value ? 'text-white' : 'text-gray-800'
+                }`}>
                   {type.label}
                 </Text>
               </TouchableOpacity>
@@ -205,61 +205,61 @@ export default function CarHire() {
         </View>
 
         <TouchableOpacity 
-          style={[styles.searchButton, isLoading && styles.disabledButton]}
+          className={`p-4 rounded-lg items-center mt-2.5 ${isLoading ? 'bg-gray-400' : 'bg-green-600'}`}
           onPress={handleSearchCars}
           disabled={isLoading}
         >
-          <Text style={styles.searchButtonText}>
+          <Text className="text-white text-base font-semibold">
             {isLoading ? "Searching..." : "Search Cars"}
           </Text>
         </TouchableOpacity>
       </View>
 
       {isLoading && (
-        <View style={styles.section}>
+        <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
           <LoadingSpinner message="Searching for car rentals..." />
         </View>
       )}
 
       {carRentals.length > 0 && !isLoading && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Available Cars</Text>
-          <Text style={styles.text}>Found {carRentals.length} cars at {searchForm.airport}:</Text>
+        <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
+          <Text className="text-xl font-bold mb-2.5 text-gray-800">Available Cars</Text>
+          <Text className="text-gray-800 mb-2.5 text-base">Found {carRentals.length} cars at {searchForm.airport}:</Text>
           
           {carRentals.map((car) => (
             <TouchableOpacity
               key={car.id}
-              style={styles.carCard}
+              className="bg-gray-50 p-4 rounded-lg mb-2.5 border border-gray-200"
               onPress={() => handleSelectCar(car)}
             >
-              <View style={styles.carHeader}>
-                <View style={styles.carInfo}>
-                  <Text style={styles.carCompany}>{car.company}</Text>
-                  <Text style={styles.carModel}>{car.carModel}</Text>
+              <View className="flex-row justify-between items-start mb-2.5">
+                <View className="flex-1">
+                  <Text className="text-base font-bold text-gray-800">{car.company}</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">{car.carModel}</Text>
                   {renderStarRating(car.rating)}
                 </View>
-                <Text style={styles.carPrice}>{car.currency} {car.price}/day</Text>
+                <Text className="text-lg font-bold text-green-600">{car.currency} {car.price}/day</Text>
               </View>
               
-              <View style={styles.carDetails}>
-                <View style={styles.carDetail}>
-                  <Text style={styles.detailLabel}>Location:</Text>
-                  <Text style={styles.detailValue}>{car.location}</Text>
+              <View className="mb-2.5">
+                <View className="flex-row mb-1">
+                  <Text className="text-sm font-semibold text-gray-800 w-15">Location:</Text>
+                  <Text className="text-sm text-gray-600 flex-1">{car.location}</Text>
                 </View>
-                <View style={styles.carDetail}>
-                  <Text style={styles.detailLabel}>Pickup:</Text>
-                  <Text style={styles.detailValue}>{formatDate(car.pickupDate)}</Text>
+                <View className="flex-row mb-1">
+                  <Text className="text-sm font-semibold text-gray-800 w-15">Pickup:</Text>
+                  <Text className="text-sm text-gray-600 flex-1">{formatDate(car.pickupDate)}</Text>
                 </View>
-                <View style={styles.carDetail}>
-                  <Text style={styles.detailLabel}>Return:</Text>
-                  <Text style={styles.detailValue}>{formatDate(car.returnDate)}</Text>
+                <View className="flex-row mb-1">
+                  <Text className="text-sm font-semibold text-gray-800 w-15">Return:</Text>
+                  <Text className="text-sm text-gray-600 flex-1">{formatDate(car.returnDate)}</Text>
                 </View>
               </View>
               
-              <View style={styles.featuresContainer}>
+              <View className="flex-row flex-wrap">
                 {car.features.map((feature, index) => (
-                  <View key={index} style={styles.featureTag}>
-                    <Text style={styles.featureText}>{feature}</Text>
+                  <View key={index} className="bg-blue-50 px-2 py-1 rounded-xl mr-2 mb-1">
+                    <Text className="text-xs text-blue-800 font-medium">{feature}</Text>
                   </View>
                 ))}
               </View>
@@ -269,226 +269,12 @@ export default function CarHire() {
       )}
 
       {error && (
-        <View style={styles.section}>
-          <Text style={styles.error}>Error: {error}</Text>
+        <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
+          <Text className="text-red-600 mt-2.5 text-center text-base">Error: {error}</Text>
         </View>
       )}
 
       <StatusBar style="auto" />
     </ScrollView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 20,
-  },
-  section: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  text: {
-    color: '#333',
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  inputGroup: {
-    marginBottom: 15,
-    position: 'relative',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 5,
-    color: '#333',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  locationList: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    zIndex: 1000,
-    maxHeight: 200,
-  },
-  locationItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  locationName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  locationDetails: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
-  },
-  locationType: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 2,
-    textTransform: 'capitalize',
-  },
-  carTypeGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  carTypeButton: {
-    width: '48%',
-    padding: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  selectedCarType: {
-    backgroundColor: '#28a745',
-    borderColor: '#28a745',
-  },
-  carTypeIcon: {
-    fontSize: 24,
-    marginBottom: 5,
-  },
-  carTypeLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-  },
-  selectedCarTypeText: {
-    color: '#fff',
-  },
-  searchButton: {
-    backgroundColor: '#28a745',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  searchButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  disabledButton: {
-    backgroundColor: '#ccc',
-  },
-  carCard: {
-    backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-  },
-  carHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  carInfo: {
-    flex: 1,
-  },
-  carCompany: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  carModel: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
-  },
-  ratingText: {
-    fontSize: 12,
-    color: '#ffc107',
-    marginTop: 2,
-  },
-  carPrice: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#28a745',
-  },
-  carDetails: {
-    marginBottom: 10,
-  },
-  carDetail: {
-    flexDirection: 'row',
-    marginBottom: 5,
-  },
-  detailLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    width: 60,
-  },
-  detailValue: {
-    fontSize: 14,
-    color: '#666',
-    flex: 1,
-  },
-  featuresContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  featureTag: {
-    backgroundColor: '#e3f2fd',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 8,
-    marginBottom: 4,
-  },
-  featureText: {
-    fontSize: 12,
-    color: '#1976d2',
-    fontWeight: '500',
-  },
-  error: {
-    color: 'red',
-    marginTop: 10,
-    textAlign: 'center',
-    fontSize: 16,
-  },
-}); 
+} 

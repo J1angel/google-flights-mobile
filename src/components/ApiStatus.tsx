@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 
 interface ApiStatusProps {
   isUsingFallback: boolean;
@@ -9,8 +9,8 @@ interface ApiStatusProps {
 export default function ApiStatus({ isUsingFallback, apiKeyConfigured }: ApiStatusProps) {
   if (!apiKeyConfigured) {
     return (
-      <View style={[styles.container, styles.warning]}>
-        <Text style={styles.text}>
+      <View className="p-2.5 mx-5 mb-2.5 rounded-lg bg-yellow-50 border border-yellow-200">
+        <Text className="text-xs text-center text-yellow-800">
           ⚠️ Demo Mode: Using sample data. Configure your API key for real flight data.
         </Text>
       </View>
@@ -19,8 +19,8 @@ export default function ApiStatus({ isUsingFallback, apiKeyConfigured }: ApiStat
 
   if (isUsingFallback) {
     return (
-      <View style={[styles.container, styles.info]}>
-        <Text style={styles.text}>
+      <View className="p-2.5 mx-5 mb-2.5 rounded-lg bg-blue-50 border border-blue-200">
+        <Text className="text-xs text-center text-blue-800">
           ℹ️ Using sample data due to API limits. Real data will be shown when available.
         </Text>
       </View>
@@ -28,28 +28,4 @@ export default function ApiStatus({ isUsingFallback, apiKeyConfigured }: ApiStat
   }
 
   return null;
-}
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-    marginHorizontal: 20,
-    marginBottom: 10,
-    borderRadius: 8,
-  },
-  warning: {
-    backgroundColor: '#fff3cd',
-    borderWidth: 1,
-    borderColor: '#ffeaa7',
-  },
-  info: {
-    backgroundColor: '#d1ecf1',
-    borderWidth: 1,
-    borderColor: '#bee5eb',
-  },
-  text: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#856404',
-  },
-}); 
+} 

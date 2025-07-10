@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Alert, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { Text, View, Alert, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { searchHotelDestinations, searchHotels, HotelDestination, Hotel } from '../src/services/hotelsApi';
 import CalendarPicker from '../src/components/CalendarPicker';
@@ -105,7 +105,7 @@ export default function Hotels() {
   const renderStarRating = (rating: number) => {
     const stars = '⭐'.repeat(Math.floor(rating));
     return (
-      <Text style={styles.ratingText}>
+      <Text className="text-xs text-yellow-500 mr-1">
         {stars} {rating.toFixed(1)}
       </Text>
     );
@@ -115,48 +115,48 @@ export default function Hotels() {
     if (!starRating) return null;
     const stars = '★'.repeat(starRating);
     return (
-      <Text style={styles.hotelStars}>
+      <Text className="text-sm text-yellow-500 mt-0.5">
         {stars}
       </Text>
     );
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Search Hotels</Text>
-        <Text style={styles.subtitle}>Find the perfect place to stay</Text>
+    <ScrollView className="flex-1 bg-gray-100 p-5">
+      <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
+        <Text className="text-xl font-bold mb-2.5 text-gray-800">Search Hotels</Text>
+        <Text className="text-base text-gray-600 mb-5 text-center">Find the perfect place to stay</Text>
         
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Destination</Text>
+        <View className="mb-4 relative">
+          <Text className="text-base font-semibold mb-1 text-gray-800">Destination</Text>
           <TextInput
-            style={styles.input}
+            className="border border-gray-300 rounded-lg p-3 text-base bg-white"
             placeholder="Enter city or hotel name"
             value={searchForm.destination}
             onChangeText={handleDestinationChange}
             onFocus={() => setShowDestinations(true)}
           />
           {showDestinations && destinations.length > 0 && (
-            <View style={styles.destinationList}>
+            <View className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg z-50 max-h-48">
               {destinations.slice(0, 5).map((destination) => (
                 <TouchableOpacity
                   key={destination.entityId}
-                  style={styles.destinationItem}
+                  className="p-3 border-b border-gray-200"
                   onPress={() => selectDestination(destination)}
                 >
-                  <Text style={styles.destinationName}>{destination.name}</Text>
-                  <Text style={styles.destinationDetails}>
+                  <Text className="text-base font-semibold text-gray-800">{destination.name}</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">
                     {destination.cityName}, {destination.countryName}
                   </Text>
-                  <Text style={styles.destinationType}>{destination.type}</Text>
+                  <Text className="text-xs text-gray-500 mt-0.5 capitalize">{destination.type}</Text>
                 </TouchableOpacity>
               ))}
             </View>
           )}
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Check-in Date</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold mb-1 text-gray-800">Check-in Date</Text>
           <CalendarPicker
             value={searchForm.checkinDate}
             onChange={(date: string) => setSearchForm({ ...searchForm, checkinDate: date })}
@@ -164,8 +164,8 @@ export default function Hotels() {
           />
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Check-out Date</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold mb-1 text-gray-800">Check-out Date</Text>
           <CalendarPicker
             value={searchForm.checkoutDate}
             onChange={(date: string) => setSearchForm({ ...searchForm, checkoutDate: date })}
@@ -173,11 +173,11 @@ export default function Hotels() {
           />
         </View>
 
-        <View style={styles.guestInfo}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Adults</Text>
+        <View className="flex-row justify-between">
+          <View className="mb-4 flex-1 mr-2">
+            <Text className="text-base font-semibold mb-1 text-gray-800">Adults</Text>
             <TextInput
-              style={styles.numberInput}
+              className="border border-gray-300 rounded-lg p-3 text-base bg-white text-center"
               placeholder="2"
               value={searchForm.adults}
               onChangeText={(text) => setSearchForm({ ...searchForm, adults: text })}
@@ -185,10 +185,10 @@ export default function Hotels() {
             />
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Children</Text>
+          <View className="mb-4 flex-1 mx-1">
+            <Text className="text-base font-semibold mb-1 text-gray-800">Children</Text>
             <TextInput
-              style={styles.numberInput}
+              className="border border-gray-300 rounded-lg p-3 text-base bg-white text-center"
               placeholder="0"
               value={searchForm.children}
               onChangeText={(text) => setSearchForm({ ...searchForm, children: text })}
@@ -196,10 +196,10 @@ export default function Hotels() {
             />
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Rooms</Text>
+          <View className="mb-4 flex-1 ml-2">
+            <Text className="text-base font-semibold mb-1 text-gray-800">Rooms</Text>
             <TextInput
-              style={styles.numberInput}
+              className="border border-gray-300 rounded-lg p-3 text-base bg-white text-center"
               placeholder="1"
               value={searchForm.rooms}
               onChangeText={(text) => setSearchForm({ ...searchForm, rooms: text })}
@@ -209,73 +209,73 @@ export default function Hotels() {
         </View>
 
         <TouchableOpacity 
-          style={[styles.searchButton, isLoading && styles.disabledButton]}
+          className={`p-4 rounded-lg items-center mt-2.5 ${isLoading ? 'bg-gray-400' : 'bg-orange-500'}`}
           onPress={handleSearchHotels}
           disabled={isLoading}
         >
-          <Text style={styles.searchButtonText}>
+          <Text className="text-white text-base font-semibold">
             {isLoading ? "Searching..." : "Search Hotels"}
           </Text>
         </TouchableOpacity>
       </View>
 
       {isLoading && (
-        <View style={styles.section}>
+        <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
           <LoadingSpinner message="Searching for hotels..." />
         </View>
       )}
 
       {hotels.length > 0 && !isLoading && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Available Hotels</Text>
-          <Text style={styles.text}>Found {hotels.length} hotels in {searchForm.destination}:</Text>
+        <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
+          <Text className="text-xl font-bold mb-2.5 text-gray-800">Available Hotels</Text>
+          <Text className="text-gray-800 mb-2.5 text-base">Found {hotels.length} hotels in {searchForm.destination}:</Text>
           
           {hotels.map((hotel) => (
             <TouchableOpacity
               key={hotel.id}
-              style={styles.hotelCard}
+              className="bg-gray-50 p-4 rounded-lg mb-2.5 border border-gray-200"
               onPress={() => handleSelectHotel(hotel)}
             >
-              <View style={styles.hotelHeader}>
-                <View style={styles.hotelInfo}>
-                  <Text style={styles.hotelName}>{hotel.name}</Text>
+              <View className="flex-row justify-between items-start mb-2.5">
+                <View className="flex-1">
+                  <Text className="text-base font-bold text-gray-800">{hotel.name}</Text>
                   {renderHotelStars(hotel.starRating)}
-                  <Text style={styles.hotelLocation}>{hotel.location}</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">{hotel.location}</Text>
                   {hotel.distanceFromCenter && (
-                    <Text style={styles.distanceText}>{hotel.distanceFromCenter} from center</Text>
+                    <Text className="text-xs text-gray-500 mt-0.5">{hotel.distanceFromCenter} from center</Text>
                   )}
                 </View>
-                <View style={styles.priceContainer}>
-                  <Text style={styles.hotelPrice}>{hotel.currency} {hotel.price}</Text>
-                  <Text style={styles.pricePerNight}>per night</Text>
+                <View className="items-end">
+                  <Text className="text-lg font-bold text-orange-500">{hotel.currency} {hotel.price}</Text>
+                  <Text className="text-xs text-gray-600">per night</Text>
                 </View>
               </View>
               
-              <View style={styles.ratingContainer}>
+              <View className="flex-row items-center mb-2.5">
                 {renderStarRating(hotel.rating)}
-                <Text style={styles.reviewsText}>({hotel.reviews} reviews)</Text>
+                <Text className="text-xs text-gray-600">({hotel.reviews} reviews)</Text>
               </View>
               
-              <View style={styles.dateContainer}>
-                <View style={styles.dateInfo}>
-                  <Text style={styles.dateLabel}>Check-in:</Text>
-                  <Text style={styles.dateValue}>{formatDate(hotel.checkinDate)}</Text>
+              <View className="flex-row justify-between mb-2.5">
+                <View className="flex-1">
+                  <Text className="text-xs font-semibold text-gray-800">Check-in:</Text>
+                  <Text className="text-xs text-gray-600 mt-0.5">{formatDate(hotel.checkinDate)}</Text>
                 </View>
-                <View style={styles.dateInfo}>
-                  <Text style={styles.dateLabel}>Check-out:</Text>
-                  <Text style={styles.dateValue}>{formatDate(hotel.checkoutDate)}</Text>
+                <View className="flex-1">
+                  <Text className="text-xs font-semibold text-gray-800">Check-out:</Text>
+                  <Text className="text-xs text-gray-600 mt-0.5">{formatDate(hotel.checkoutDate)}</Text>
                 </View>
               </View>
               
-              <View style={styles.amenitiesContainer}>
+              <View className="flex-row flex-wrap">
                 {hotel.amenities.slice(0, 4).map((amenity, index) => (
-                  <View key={index} style={styles.amenityTag}>
-                    <Text style={styles.amenityText}>{amenity}</Text>
+                  <View key={index} className="bg-blue-50 px-2 py-1 rounded-xl mr-2 mb-1">
+                    <Text className="text-xs text-blue-800 font-medium">{amenity}</Text>
                   </View>
                 ))}
                 {hotel.amenities.length > 4 && (
-                  <View style={styles.amenityTag}>
-                    <Text style={styles.amenityText}>+{hotel.amenities.length - 4} more</Text>
+                  <View className="bg-blue-50 px-2 py-1 rounded-xl mr-2 mb-1">
+                    <Text className="text-xs text-blue-800 font-medium">+{hotel.amenities.length - 4} more</Text>
                   </View>
                 )}
               </View>
@@ -285,234 +285,12 @@ export default function Hotels() {
       )}
 
       {error && (
-        <View style={styles.section}>
-          <Text style={styles.error}>Error: {error}</Text>
+        <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
+          <Text className="text-red-600 mt-2.5 text-center text-base">Error: {error}</Text>
         </View>
       )}
 
       <StatusBar style="auto" />
     </ScrollView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 20,
-  },
-  section: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  text: {
-    color: '#333',
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  inputGroup: {
-    marginBottom: 15,
-    position: 'relative',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 5,
-    color: '#333',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  numberInput: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-    textAlign: 'center',
-  },
-  destinationList: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    zIndex: 1000,
-    maxHeight: 200,
-  },
-  destinationItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  destinationName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  destinationDetails: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
-  },
-  destinationType: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 2,
-    textTransform: 'capitalize',
-  },
-  guestInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  searchButton: {
-    backgroundColor: '#ff6b35',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  searchButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  disabledButton: {
-    backgroundColor: '#ccc',
-  },
-  hotelCard: {
-    backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-  },
-  hotelHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  hotelInfo: {
-    flex: 1,
-  },
-  hotelName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  hotelStars: {
-    fontSize: 14,
-    color: '#ffc107',
-    marginTop: 2,
-  },
-  hotelLocation: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
-  },
-  distanceText: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 2,
-  },
-  priceContainer: {
-    alignItems: 'flex-end',
-  },
-  hotelPrice: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ff6b35',
-  },
-  pricePerNight: {
-    fontSize: 12,
-    color: '#666',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  ratingText: {
-    fontSize: 12,
-    color: '#ffc107',
-    marginRight: 5,
-  },
-  reviewsText: {
-    fontSize: 12,
-    color: '#666',
-  },
-  dateContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  dateInfo: {
-    flex: 1,
-  },
-  dateLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#333',
-  },
-  dateValue: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 2,
-  },
-  amenitiesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  amenityTag: {
-    backgroundColor: '#e3f2fd',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 8,
-    marginBottom: 4,
-  },
-  amenityText: {
-    fontSize: 12,
-    color: '#1976d2',
-    fontWeight: '500',
-  },
-  error: {
-    color: 'red',
-    marginTop: 10,
-    textAlign: 'center',
-    fontSize: 16,
-  },
-}); 
+} 

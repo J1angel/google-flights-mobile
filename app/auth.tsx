@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../src/store';
 import { useRouter } from 'expo-router';
@@ -12,7 +12,7 @@ export default function Auth() {
   const router = useRouter();
   const auth = useAppSelector((state) => state.auth);
 
-  const [isSignUpMode, setIsSignUpMode] = useState(true);
+  const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     name: '',
@@ -20,14 +20,12 @@ export default function Auth() {
     confirmPassword: '',
   });
 
-  // Redirect to home if already authenticated
   useEffect(() => {
     if (auth.isAuthenticated) {
       router.replace('/home');
     }
   }, [auth.isAuthenticated, router]);
 
-  // Clear error when switching modes
   useEffect(() => {
     dispatch(clearError());
   }, [isSignUpMode, dispatch]);
@@ -38,7 +36,6 @@ export default function Auth() {
 
   const handleSubmit = () => {
     if (isSignUpMode) {
-      // Registration
       if (formData.password !== formData.confirmPassword) {
         Alert.alert('Error', 'Passwords do not match');
         return;
@@ -50,7 +47,6 @@ export default function Auth() {
         formData.password
       ));
     } else {
-      // Login
       dispatch(loginUser(formData.username, formData.password));
     }
   };
@@ -78,19 +74,19 @@ export default function Auth() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Google Flights</Text>
-        <Text style={styles.subtitle}>
+    <ScrollView className="flex-1 bg-gray-100">
+      <View className=" bg-blue-600 pt-15 pb-10 px-5 items-center">
+        <Text className="mt-5 text-3xl font-bold text-white mb-2.5">Google Flights</Text>
+        <Text className="text-base text-blue-100 text-center">
           {isSignUpMode ? 'Create your account' : 'Welcome back'}
         </Text>
       </View>
 
-      <View style={styles.form}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Username</Text>
+      <View className="p-5">
+        <View className="mb-5">
+          <Text className="text-base font-semibold mb-2 text-gray-800">Username</Text>
           <TextInput
-            style={styles.input}
+            className="border border-gray-300 rounded-lg p-4 text-base bg-white"
             placeholder="Enter username"
             value={formData.username}
             onChangeText={(text) => handleInputChange('username', text)}
@@ -100,10 +96,10 @@ export default function Auth() {
         </View>
 
         {isSignUpMode && (
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Full Name</Text>
+          <View className="mb-5">
+            <Text className="text-base font-semibold mb-2 text-gray-800">Full Name</Text>
             <TextInput
-              style={styles.input}
+              className="border border-gray-300 rounded-lg p-4 text-base bg-white"
               placeholder="Enter your full name"
               value={formData.name}
               onChangeText={(text) => handleInputChange('name', text)}
@@ -112,10 +108,10 @@ export default function Auth() {
           </View>
         )}
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Password</Text>
+        <View className="mb-5">
+          <Text className="text-base font-semibold mb-2 text-gray-800">Password</Text>
           <TextInput
-            style={styles.input}
+            className="border border-gray-300 rounded-lg p-4 text-base bg-white"
             placeholder="Enter password"
             value={formData.password}
             onChangeText={(text) => handleInputChange('password', text)}
@@ -125,10 +121,10 @@ export default function Auth() {
         </View>
 
         {isSignUpMode && (
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Confirm Password</Text>
+          <View className="mb-5">
+            <Text className="text-base font-semibold mb-2 text-gray-800">Confirm Password</Text>
             <TextInput
-              style={styles.input}
+              className="border border-gray-300 rounded-lg p-4 text-base bg-white"
               placeholder="Confirm password"
               value={formData.confirmPassword}
               onChangeText={(text) => handleInputChange('confirmPassword', text)}
@@ -139,155 +135,39 @@ export default function Auth() {
         )}
 
         {auth.error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{auth.error}</Text>
+          <View className="bg-red-50 p-4 rounded-lg mb-5 border border-red-200">
+            <Text className="text-red-800 text-sm text-center">{auth.error}</Text>
           </View>
         )}
 
         <TouchableOpacity
-          style={[styles.submitButton, (!isFormValid() || auth.isLoading) && styles.disabledButton]}
+          className={`p-4 rounded-lg items-center mb-5 ${(!isFormValid() || auth.isLoading) ? 'bg-gray-400' : 'bg-blue-600'}`}
           onPress={handleSubmit}
           disabled={!isFormValid() || auth.isLoading}
         >
           {auth.isLoading ? (
             <LoadingSpinner message={isSignUpMode ? "Creating account..." : "Signing in..."} />
           ) : (
-            <Text style={styles.submitButtonText}>
+            <Text className="text-white text-base font-semibold">
               {isSignUpMode ? 'Create Account' : 'Sign In'}
             </Text>
           )}
         </TouchableOpacity>
 
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>
+        <View className="flex-row justify-center items-center mb-5">
+          <Text className="text-gray-600 text-sm mr-1">
             {isSignUpMode ? 'Already have an account?' : "Don't have an account?"}
           </Text>
           <TouchableOpacity onPress={toggleMode}>
-            <Text style={styles.switchButton}>
+            <Text className="text-blue-600 text-sm font-semibold">
               {isSignUpMode ? 'Sign In' : 'Sign Up'}
             </Text>
           </TouchableOpacity>
         </View>
 
-        {!isSignUpMode && (
-          <View style={styles.demoContainer}>
-            <Text style={styles.demoTitle}>Demo Account</Text>
-            <Text style={styles.demoText}>Username: demo</Text>
-            <Text style={styles.demoText}>Password: demo123</Text>
-          </View>
-        )}
       </View>
 
       <StatusBar style="auto" />
     </ScrollView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    backgroundColor: '#007bff',
-    paddingTop: 60,
-    paddingBottom: 40,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#e3f2fd',
-    textAlign: 'center',
-  },
-  form: {
-    padding: 20,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#333',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 15,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  errorContainer: {
-    backgroundColor: '#ffebee',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#ffcdd2',
-  },
-  errorText: {
-    color: '#c62828',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  submitButton: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  disabledButton: {
-    backgroundColor: '#ccc',
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  switchText: {
-    color: '#666',
-    fontSize: 14,
-    marginRight: 5,
-  },
-  switchButton: {
-    color: '#007bff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  demoContainer: {
-    backgroundColor: '#e3f2fd',
-    padding: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#bbdefb',
-  },
-  demoTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1976d2',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  demoText: {
-    fontSize: 14,
-    color: '#424242',
-    textAlign: 'center',
-    marginBottom: 2,
-  },
-}); 
+} 

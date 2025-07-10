@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../src/store';
 import { logout } from '../src/features/auth/authSlice';
 import { useRouter } from 'expo-router';
@@ -27,63 +27,63 @@ export default function Home() {
     router.push('/hotels');
   };
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView className="flex-1 bg-gray-100 p-5 pt-15">
     
       <ApiStatus 
         isUsingFallback={false} 
         apiKeyConfigured={API_CONFIG.RAPIDAPI_KEY !== 'YOUR_RAPIDAPI_KEY'} 
       />
       
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Account</Text>
-        <Text style={styles.text}>Username: {auth.user?.username || 'Not set'}</Text>
-        <Text style={styles.text}>User ID: {auth.user?.id || 'Not set'}</Text>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
+      <View className="mt-5 bg-white p-5 rounded-xl mb-5 shadow-lg">
+        <Text className="text-xl font-bold mb-4 text-gray-800">Account</Text>
+        <Text className="text-gray-800 mb-2.5 text-base">Username: {auth.user?.username || 'Not set'}</Text>
+        <Text className="text-gray-800 mb-2.5 text-base">User ID: {auth.user?.id || 'Not set'}</Text>
+        <TouchableOpacity className="bg-red-600 p-3 rounded-lg items-center mt-2.5" onPress={handleLogout}>
+          <Text className="text-white text-base font-semibold">Logout</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Choose Your Service</Text>
-        <Text style={styles.subtitle}>What would you like to book today?</Text>
+      <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
+        <Text className="text-xl font-bold mb-4 text-gray-800">Choose Your Service</Text>
+        <Text className="text-base text-gray-600 mb-5 text-center">What would you like to book today?</Text>
         
-        <TouchableOpacity style={styles.serviceCard} onPress={navigateToFlights}>
-          <View style={styles.serviceIcon}>
-            <Text style={styles.iconText}>✈️</Text>
+        <TouchableOpacity className="flex-row items-center bg-gray-50 p-5 rounded-xl mb-4 border border-gray-200" onPress={navigateToFlights}>
+          <View className="w-12 h-12 rounded-full bg-white justify-center items-center mr-4 shadow-sm">
+            <Text className="text-2xl">✈️</Text>
           </View>
-          <View style={styles.serviceContent}>
-            <Text style={styles.serviceTitle}>Search Flights</Text>
-            <Text style={styles.serviceDescription}>
+          <View className="flex-1">
+            <Text className="text-lg font-bold text-gray-800 mb-1">Search Flights</Text>
+            <Text className="text-sm text-gray-600 leading-5">
               Find the best flight deals with real-time pricing and availability
             </Text>
           </View>
-          <Text style={styles.arrow}>›</Text>
+          <Text className="text-2xl text-blue-600 font-bold">›</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.serviceCard} onPress={navigateToCarHire}>
-          <View style={styles.serviceIcon}>
-            <Text style={styles.iconText}>🚗</Text>
+        <TouchableOpacity className="flex-row items-center bg-gray-50 p-5 rounded-xl mb-4 border border-gray-200" onPress={navigateToCarHire}>
+          <View className="w-12 h-12 rounded-full bg-white justify-center items-center mr-4 shadow-sm">
+            <Text className="text-2xl">🚗</Text>
           </View>
-          <View style={styles.serviceContent}>
-            <Text style={styles.serviceTitle}>Car Hire</Text>
-            <Text style={styles.serviceDescription}>
+          <View className="flex-1">
+            <Text className="text-lg font-bold text-gray-800 mb-1">Car Hire</Text>
+            <Text className="text-sm text-gray-600 leading-5">
               Rent a car for your trip with competitive rates and flexible options
             </Text>
           </View>
-          <Text style={styles.arrow}>›</Text>
+          <Text className="text-2xl text-blue-600 font-bold">›</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.serviceCard} onPress={navigateToHotels}>
-          <View style={styles.serviceIcon}>
-            <Text style={styles.iconText}>🏨</Text>
+        <TouchableOpacity className="flex-row items-center bg-gray-50 p-5 rounded-xl mb-4 border border-gray-200" onPress={navigateToHotels}>
+          <View className="w-12 h-12 rounded-full bg-white justify-center items-center mr-4 shadow-sm">
+            <Text className="text-2xl">🏨</Text>
           </View>
-          <View style={styles.serviceContent}>
-            <Text style={styles.serviceTitle}>Hotels</Text>
-            <Text style={styles.serviceDescription}>
+          <View className="flex-1">
+            <Text className="text-lg font-bold text-gray-800 mb-1">Hotels</Text>
+            <Text className="text-sm text-gray-600 leading-5">
               Book comfortable accommodations with great rates and amenities
             </Text>
           </View>
-          <Text style={styles.arrow}>›</Text>
+          <Text className="text-2xl text-blue-600 font-bold">›</Text>
         </TouchableOpacity>
 
       </View>
@@ -92,131 +92,4 @@ export default function Home() {
       <StatusBar style="auto" />
     </ScrollView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 20,
-    paddingTop: 60,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    color: '#333',
-  },
-  section: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  text: {
-    color: '#333',
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  logoutButton: {
-    backgroundColor: '#dc3545',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  serviceCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f8f9fa',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-  },
-  serviceIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  iconText: {
-    fontSize: 24,
-  },
-  serviceContent: {
-    flex: 1,
-  },
-  serviceTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-  },
-  serviceDescription: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  arrow: {
-    fontSize: 24,
-    color: '#007bff',
-    fontWeight: 'bold',
-  },
-  tipCard: {
-    backgroundColor: '#e3f2fd',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: '#2196f3',
-  },
-  tipTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1976d2',
-    marginBottom: 5,
-  },
-  tipText: {
-    fontSize: 14,
-    color: '#424242',
-    lineHeight: 20,
-  },
-}); 
+} 

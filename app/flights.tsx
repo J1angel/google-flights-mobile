@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Alert, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { Text, View, Alert, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../src/store';
 import { fetchFlights, selectFlight, clearFlights } from '../src/features/flights/flightsSlice';
 import { useState } from 'react';
@@ -102,30 +102,30 @@ export default function Flights() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Search Flights</Text>
-        <Text style={styles.subtitle}>Find the best flight deals for your trip</Text>
+    <ScrollView className="flex-1 bg-gray-100 p-5">
+      <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
+        <Text className="text-xl font-bold mb-2.5 text-gray-800">Search Flights</Text>
+        <Text className="text-base text-gray-600 mb-5 text-center">Find the best flight deals for your trip</Text>
         
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>From</Text>
+        <View className="mb-4 relative">
+          <Text className="text-base font-semibold mb-1 text-gray-800">From</Text>
           <TextInput
-            style={styles.input}
+            className="border border-gray-300 rounded-lg p-3 text-base bg-white"
             placeholder="Enter origin city or airport"
             value={searchForm.origin}
             onChangeText={handleOriginChange}
             onFocus={() => setShowOriginAirports(true)}
           />
           {showOriginAirports && airports.length > 0 && (
-            <View style={styles.airportList}>
+            <View className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg z-50 max-h-48">
               {airports.slice(0, 5).map((airport) => (
                 <TouchableOpacity
                   key={airport.entityId}
-                  style={styles.airportItem}
+                  className="p-3 border-b border-gray-200"
                   onPress={() => selectAirport(airport, 'origin')}
                 >
-                  <Text style={styles.airportName}>{airport.name}</Text>
-                  <Text style={styles.airportLocation}>
+                  <Text className="text-base font-semibold text-gray-800">{airport.name}</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">
                     {airport.cityName}, {airport.countryName}
                   </Text>
                 </TouchableOpacity>
@@ -134,25 +134,25 @@ export default function Flights() {
           )}
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>To</Text>
+        <View className="mb-4 relative">
+          <Text className="text-base font-semibold mb-1 text-gray-800">To</Text>
           <TextInput
-            style={styles.input}
+            className="border border-gray-300 rounded-lg p-3 text-base bg-white"
             placeholder="Enter destination city or airport"
             value={searchForm.destination}
             onChangeText={handleDestinationChange}
             onFocus={() => setShowDestinationAirports(true)}
           />
           {showDestinationAirports && airports.length > 0 && (
-            <View style={styles.airportList}>
+            <View className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg z-50 max-h-48">
               {airports.slice(0, 5).map((airport) => (
                 <TouchableOpacity
                   key={airport.entityId}
-                  style={styles.airportItem}
+                  className="p-3 border-b border-gray-200"
                   onPress={() => selectAirport(airport, 'destination')}
                 >
-                  <Text style={styles.airportName}>{airport.name}</Text>
-                  <Text style={styles.airportLocation}>
+                  <Text className="text-base font-semibold text-gray-800">{airport.name}</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">
                     {airport.cityName}, {airport.countryName}
                   </Text>
                 </TouchableOpacity>
@@ -161,8 +161,8 @@ export default function Flights() {
           )}
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Date</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold mb-1 text-gray-800">Date</Text>
           <CalendarPicker
             value={searchForm.date}
             onChange={(date: string) => setSearchForm({ ...searchForm, date })}
@@ -170,10 +170,10 @@ export default function Flights() {
           />
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Passengers</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold mb-1 text-gray-800">Passengers</Text>
           <TextInput
-            style={styles.input}
+            className="border border-gray-300 rounded-lg p-3 text-base bg-white"
             placeholder="Number of adults"
             value={searchForm.adults}
             onChangeText={(text) => setSearchForm({ ...searchForm, adults: text })}
@@ -182,71 +182,71 @@ export default function Flights() {
         </View>
 
         <TouchableOpacity 
-          style={[styles.searchButton, flights.isLoading && styles.disabledButton]}
+          className={`p-4 rounded-lg items-center mt-2.5 ${flights.isLoading ? 'bg-gray-400' : 'bg-blue-600'}`}
           onPress={handleSearchFlights}
           disabled={flights.isLoading}
         >
-          <Text style={styles.searchButtonText}>
+          <Text className="text-white text-base font-semibold">
             {flights.isLoading ? "Searching..." : "Search Flights"}
           </Text>
         </TouchableOpacity>
       </View>
 
       {flights.isLoading && (
-        <View style={styles.section}>
+        <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
           <LoadingSpinner message="Searching for flights..." />
         </View>
       )}
 
       {flights.flights.length > 0 && !flights.isLoading && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Search Results</Text>
-          <Text style={styles.text}>Found {flights.flights.length} flights:</Text>
+        <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
+          <Text className="text-xl font-bold mb-2.5 text-gray-800">Search Results</Text>
+          <Text className="text-gray-800 mb-2.5 text-base">Found {flights.flights.length} flights:</Text>
           
           {flights.flights.map((flight) => (
             <TouchableOpacity
               key={flight.id}
-              style={styles.flightCard}
+              className="bg-gray-50 p-4 rounded-lg mb-2.5 border border-gray-200"
               onPress={() => handleSelectFlight(flight)}
             >
-              <View style={styles.flightHeader}>
-                <Text style={styles.airline}>{flight.airline}</Text>
-                <Text style={styles.price}>{flight.currency} {flight.price}</Text>
+              <View className="flex-row justify-between items-center mb-2.5">
+                <Text className="text-base font-bold text-gray-800">{flight.airline}</Text>
+                <Text className="text-lg font-bold text-blue-600">{flight.currency} {flight.price}</Text>
               </View>
               
-              <View style={styles.flightDetails}>
-                <View style={styles.timeInfo}>
-                  <Text style={styles.time}>{flight.departureTime}</Text>
-                  <Text style={styles.airport}>{flight.origin}</Text>
+              <View className="flex-row justify-between items-center mb-2.5">
+                <View className="items-center flex-1">
+                  <Text className="text-base font-semibold text-gray-800">{flight.departureTime}</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">{flight.origin}</Text>
                 </View>
                 
-                <View style={styles.durationInfo}>
-                  <Text style={styles.duration}>{flight.duration}</Text>
-                  <Text style={styles.stops}>
+                <View className="items-center flex-1">
+                  <Text className="text-sm text-gray-600">{flight.duration}</Text>
+                  <Text className="text-xs text-gray-500 mt-0.5">
                     {flight.stops === 0 ? 'Direct' : `${flight.stops} stop${flight.stops > 1 ? 's' : ''}`}
                   </Text>
                 </View>
                 
-                <View style={styles.timeInfo}>
-                  <Text style={styles.time}>{flight.arrivalTime}</Text>
-                  <Text style={styles.airport}>{flight.destination}</Text>
+                <View className="items-center flex-1">
+                  <Text className="text-base font-semibold text-gray-800">{flight.arrivalTime}</Text>
+                  <Text className="text-sm text-gray-600 mt-0.5">{flight.destination}</Text>
                 </View>
               </View>
               
-              <Text style={styles.flightNumber}>Flight {flight.flightNumber}</Text>
+              <Text className="text-xs text-gray-600 text-center">Flight {flight.flightNumber}</Text>
             </TouchableOpacity>
           ))}
         </View>
       )}
 
       {flights.error && (
-        <View style={styles.section}>
-          <Text style={styles.error}>Error: {flights.error}</Text>
+        <View className="bg-white p-5 rounded-xl mb-5 shadow-lg">
+          <Text className="text-red-600 mt-2.5 text-center text-base">Error: {flights.error}</Text>
           <TouchableOpacity 
-            style={styles.clearButton}
+            className="bg-red-600 p-3 rounded-lg items-center mt-2.5"
             onPress={() => dispatch(clearFlights())}
           >
-            <Text style={styles.clearButtonText}>Clear Error</Text>
+            <Text className="text-white text-base font-semibold">Clear Error</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -254,183 +254,4 @@ export default function Flights() {
       <StatusBar style="auto" />
     </ScrollView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 20,
-  },
-  section: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  text: {
-    color: '#333',
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  inputGroup: {
-    marginBottom: 15,
-    position: 'relative',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 5,
-    color: '#333',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  airportList: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    zIndex: 1000,
-    maxHeight: 200,
-  },
-  airportItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  airportName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  airportLocation: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
-  },
-  searchButton: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  searchButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  disabledButton: {
-    backgroundColor: '#ccc',
-  },
-  flightCard: {
-    backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-  },
-  flightHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  airline: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  price: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#007bff',
-  },
-  flightDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  timeInfo: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  time: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  airport: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
-  },
-  durationInfo: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  duration: {
-    fontSize: 14,
-    color: '#666',
-  },
-  stops: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 2,
-  },
-  flightNumber: {
-    fontSize: 12,
-    color: '#666',
-    textAlign: 'center',
-  },
-  error: {
-    color: 'red',
-    marginTop: 10,
-    textAlign: 'center',
-    fontSize: 16,
-  },
-  clearButton: {
-    backgroundColor: '#dc3545',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  clearButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-}); 
+} 
