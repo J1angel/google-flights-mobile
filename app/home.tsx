@@ -5,7 +5,7 @@ import { logout } from '../src/features/auth/authSlice';
 import { fetchFlights, selectFlight, clearFlights } from '../src/features/flights/flightsSlice';
 import { useState } from 'react';
 import { getAirports } from '../src/services/flightsApi';
-import DatePicker from '../src/components/DatePicker';
+import CalendarPicker from '../src/components/CalendarPicker';
 import LoadingSpinner from '../src/components/LoadingSpinner';
 import ApiStatus from '../src/components/ApiStatus';
 import { API_CONFIG } from '../src/config/api';
@@ -189,9 +189,9 @@ export default function Home() {
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Date</Text>
-          <DatePicker
+          <CalendarPicker
             value={searchForm.date}
-            onChange={(date) => setSearchForm({ ...searchForm, date })}
+            onChange={(date: string) => setSearchForm({ ...searchForm, date })}
             placeholder="Select travel date"
           />
         </View>
