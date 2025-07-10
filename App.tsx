@@ -16,7 +16,6 @@ import {
 import { fetchFlights, selectFlight } from './src/features/flights/flightsSlice';
 import { useState } from 'react';
 
-// Sample component that uses Redux
 function ReduxDemo() {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
@@ -40,7 +39,6 @@ function ReduxDemo() {
     }
 
     dispatch(signUpStart());
-    // Simulate sign-up
     setTimeout(() => {
       dispatch(signUpSuccess({
         id: '1',
@@ -58,12 +56,11 @@ function ReduxDemo() {
     }
 
     dispatch(loginStart());
-    // Simulate login
     setTimeout(() => {
       dispatch(loginSuccess({
         id: '1',
         email: formData.email,
-        name: 'John Doe' // In real app, this would come from the server
+        name: 'John Doe'
       }));
       setFormData({ name: '', email: '', password: '' });
     }, 1000);
@@ -170,7 +167,7 @@ function ReduxDemo() {
       
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Account</Text>
-        <Text>Email: {auth.user?.email}</Text>
+        <Text style={styles.text}>Email: {auth.user?.email}</Text>
         <Button title="Logout" onPress={handleLogout} />
       </View>
 
@@ -182,10 +179,10 @@ function ReduxDemo() {
           disabled={flights.isLoading}
         />
         {flights.flights.length > 0 && (
-          <View>
-            <Text>Found {flights.flights.length} flights:</Text>
+          <View style={styles.flightsContainer}>
+            <Text style={styles.text}>Found {flights.flights.length} flights:</Text>
             {flights.flights.map((flight) => (
-              <Text key={flight.id}>
+              <Text key={flight.id} style={styles.flightText}>
                 {flight.origin} → {flight.destination} - ${flight.price}
               </Text>
             ))}
@@ -280,6 +277,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#333',
+  },
+  text: {
+    color: '#333',
+    marginBottom: 10,
+  },
+  flightsContainer: {
+    marginTop: 15,
+  },
+  flightText: {
+    color: '#666',
+    marginBottom: 5,
   },
   error: {
     color: 'red',
