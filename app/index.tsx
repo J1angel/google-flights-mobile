@@ -1,5 +1,4 @@
 import { useAppSelector } from '../src/store';
-import { View, ActivityIndicator } from 'react-native';
 import Auth from './auth';
 import Home from './home';
 
