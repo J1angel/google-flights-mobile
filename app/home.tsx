@@ -23,10 +23,12 @@ export default function Home() {
     router.push('/car-hire');
   };
 
+  const navigateToHotels = () => {
+    router.push('/hotels');
+  };
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Welcome, {auth.user?.name}!</Text>
-      
+    
       <ApiStatus 
         isUsingFallback={false} 
         apiKeyConfigured={API_CONFIG.RAPIDAPI_KEY !== 'YOUR_RAPIDAPI_KEY'} 
@@ -70,7 +72,22 @@ export default function Home() {
           </View>
           <Text style={styles.arrow}>›</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.serviceCard} onPress={navigateToHotels}>
+          <View style={styles.serviceIcon}>
+            <Text style={styles.iconText}>🏨</Text>
+          </View>
+          <View style={styles.serviceContent}>
+            <Text style={styles.serviceTitle}>Hotels</Text>
+            <Text style={styles.serviceDescription}>
+              Book comfortable accommodations with great rates and amenities
+            </Text>
+          </View>
+          <Text style={styles.arrow}>›</Text>
+        </TouchableOpacity>
+
       </View>
+
 
       <StatusBar style="auto" />
     </ScrollView>

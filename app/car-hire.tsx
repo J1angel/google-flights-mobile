@@ -1,33 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Alert, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
+import { searchCarLocations, searchCars, CarLocation, CarRental } from '../src/services/carsApi';
 import CalendarPicker from '../src/components/CalendarPicker';
 import LoadingSpinner from '../src/components/LoadingSpinner';
 
-interface CarRental {
-  id: string;
-  company: string;
-  carModel: string;
-  carType: string;
-  price: number;
-  currency: string;
-  location: string;
-  pickupDate: string;
-  returnDate: string;
-  features: string[];
-}
-
 export default function CarHire() {
   const [searchForm, setSearchForm] = useState({
-    location: '',
+    airport: '',
     pickupDate: '',
     returnDate: '',
     carType: 'economy',
   });
 
+  const [carLocations, setCarLocations] = useState<CarLocation[]>([]);
+  const [showLocations, setShowLocations] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [carRentals, setCarRentals] = useState<CarRental[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<CarLocation | null>(null);
 
   const carTypes = [
     { value: 'economy', label: 'Economy', icon: '🚗' },
@@ -38,77 +29,81 @@ export default function CarHire() {
     { value: 'luxury', label: 'Luxury', icon: '🏎️' },
   ];
 
-  const handleSearchCars = () => {
-    if (!searchForm.location || !searchForm.pickupDate || !searchForm.returnDate) {
+  const searchLocations = async (query: string) => {
+    if (query.length < 2) return;
+    
+    try {
+      const results = await searchCarLocations(query);
+      setCarLocations(results);
+    } catch (error) {
+      console.error('Error searching car locations:', error);
+    }
+  };
+
+  const handleAirportChange = (text: string) => {
+    setSearchForm({ ...searchForm, airport: text });
+    setShowLocations(true);
+    searchLocations(text);
+  };
+
+  const selectLocation = (location: CarLocation) => {
+    setSearchForm({ 
+      ...searchForm, 
+      airport: `${location.cityName} (${location.name})` 
+    });
+    setSelectedLocation(location);
+    setShowLocations(false);
+  };
+
+  const handleSearchCars = async () => {
+    if (!searchForm.airport || !searchForm.pickupDate || !searchForm.returnDate) {
       Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
+
+    if (!selectedLocation) {
+      Alert.alert('Error', 'Please select a valid location from the suggestions');
       return;
     }
 
     setIsLoading(true);
     setError(null);
 
-    // Simulate API call with mock data
-    setTimeout(() => {
-      const mockRentals: CarRental[] = [
-        {
-          id: '1',
-          company: 'Hertz',
-          carModel: 'Toyota Corolla',
-          carType: 'economy',
-          price: 45,
-          currency: 'USD',
-          location: searchForm.location,
-          pickupDate: searchForm.pickupDate,
-          returnDate: searchForm.returnDate,
-          features: ['Automatic', 'Air Conditioning', 'Bluetooth'],
-        },
-        {
-          id: '2',
-          company: 'Enterprise',
-          carModel: 'Honda Civic',
-          carType: 'economy',
-          price: 42,
-          currency: 'USD',
-          location: searchForm.location,
-          pickupDate: searchForm.pickupDate,
-          returnDate: searchForm.returnDate,
-          features: ['Automatic', 'Air Conditioning', 'USB Charging'],
-        },
-        {
-          id: '3',
-          company: 'Avis',
-          carModel: 'Ford Escape',
-          carType: 'suv',
-          price: 65,
-          currency: 'USD',
-          location: searchForm.location,
-          pickupDate: searchForm.pickupDate,
-          returnDate: searchForm.returnDate,
-          features: ['Automatic', 'Air Conditioning', 'GPS', 'All-Wheel Drive'],
-        },
-        {
-          id: '4',
-          company: 'Budget',
-          carModel: 'Nissan Altima',
-          carType: 'midsize',
-          price: 55,
-          currency: 'USD',
-          location: searchForm.location,
-          pickupDate: searchForm.pickupDate,
-          returnDate: searchForm.returnDate,
-          features: ['Automatic', 'Air Conditioning', 'Backup Camera'],
-        },
-      ].filter(car => car.carType === searchForm.carType);
+    try {
+      // Calculate return date (assuming 5 days rental for demo)
+      const pickupDate = new Date(searchForm.pickupDate);
+      const returnDate = new Date(pickupDate);
+      returnDate.setDate(pickupDate.getDate() + 5);
 
-      setCarRentals(mockRentals);
+      const carSearchParams = {
+        pickUpEntityId: selectedLocation.entityId,
+        pickUpDate: searchForm.pickupDate,
+        pickUpTime: '10:00', // Default pickup time
+        currency: 'USD',
+        countryCode: 'US',
+        market: 'en-US',
+      };
+
+      const results = await searchCars(carSearchParams);
+      
+      // Filter by car type if specified
+      const filteredResults = searchForm.carType !== 'all' 
+        ? results.filter(car => car.carType === searchForm.carType)
+        : results;
+
+      setCarRentals(filteredResults);
+    } catch (error: any) {
+      console.error('Error searching cars:', error);
+      setError(error.message || 'Failed to search for cars');
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   const handleSelectCar = (car: CarRental) => {
     Alert.alert(
       'Car Selected', 
-      `Selected ${car.company} - ${car.carModel}\nLocation: ${car.location}\nPrice: ${car.currency} ${car.price}/day\nPickup: ${car.pickupDate}\nReturn: ${car.returnDate}`
+      `Selected ${car.company} - ${car.carModel}\nLocation: ${car.location}\nPrice: ${car.currency} ${car.price}/day\nPickup: ${car.pickupDate}\nReturn: ${car.returnDate}${car.rating ? `\nRating: ${car.rating}/5 (${car.reviews} reviews)` : ''}`
     );
   };
 
@@ -122,6 +117,17 @@ export default function CarHire() {
     });
   };
 
+  const renderStarRating = (rating?: number) => {
+    if (!rating) return null;
+    
+    const stars = '⭐'.repeat(Math.floor(rating));
+    return (
+      <Text style={styles.ratingText}>
+        {stars} {rating.toFixed(1)}
+      </Text>
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.section}>
@@ -129,13 +135,31 @@ export default function CarHire() {
         <Text style={styles.subtitle}>Find the perfect car for your trip</Text>
         
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Pickup Location</Text>
+          <Text style={styles.label}>Airport</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter city or airport"
-            value={searchForm.location}
-            onChangeText={(text) => setSearchForm({ ...searchForm, location: text })}
+            placeholder="Enter airport or city"
+            value={searchForm.airport}
+            onChangeText={handleAirportChange}
+            onFocus={() => setShowLocations(true)}
           />
+          {showLocations && carLocations.length > 0 && (
+            <View style={styles.locationList}>
+              {carLocations.slice(0, 5).map((location) => (
+                <TouchableOpacity
+                  key={location.entityId}
+                  style={styles.locationItem}
+                  onPress={() => selectLocation(location)}
+                >
+                  <Text style={styles.locationName}>{location.name}</Text>
+                  <Text style={styles.locationDetails}>
+                    {location.cityName}, {location.countryName}
+                  </Text>
+                  <Text style={styles.locationType}>{location.type}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
 
         <View style={styles.inputGroup}>
@@ -200,7 +224,7 @@ export default function CarHire() {
       {carRentals.length > 0 && !isLoading && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Available Cars</Text>
-          <Text style={styles.text}>Found {carRentals.length} cars:</Text>
+          <Text style={styles.text}>Found {carRentals.length} cars at {searchForm.airport}:</Text>
           
           {carRentals.map((car) => (
             <TouchableOpacity
@@ -212,6 +236,7 @@ export default function CarHire() {
                 <View style={styles.carInfo}>
                   <Text style={styles.carCompany}>{car.company}</Text>
                   <Text style={styles.carModel}>{car.carModel}</Text>
+                  {renderStarRating(car.rating)}
                 </View>
                 <Text style={styles.carPrice}>{car.currency} {car.price}/day</Text>
               </View>
@@ -293,6 +318,7 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     marginBottom: 15,
+    position: 'relative',
   },
   label: {
     fontSize: 16,
@@ -307,6 +333,39 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     backgroundColor: '#fff',
+  },
+  locationList: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    zIndex: 1000,
+    maxHeight: 200,
+  },
+  locationItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  locationName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  locationDetails: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 2,
+  },
+  locationType: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 2,
+    textTransform: 'capitalize',
   },
   carTypeGrid: {
     flexDirection: 'row',
@@ -365,7 +424,7 @@ const styles = StyleSheet.create({
   carHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: 10,
   },
   carInfo: {
@@ -379,6 +438,11 @@ const styles = StyleSheet.create({
   carModel: {
     fontSize: 14,
     color: '#666',
+    marginTop: 2,
+  },
+  ratingText: {
+    fontSize: 12,
+    color: '#ffc107',
     marginTop: 2,
   },
   carPrice: {

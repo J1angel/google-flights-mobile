@@ -56,6 +56,20 @@ export default function RootLayout() {
               },
             }} 
           />
+          <Stack.Screen 
+            name="hotels" 
+            options={{ 
+              title: 'Hotels',
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: '#ff6b35',
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            }} 
+          />
         </Stack>
       </SafeAreaProvider>
     </Provider>
