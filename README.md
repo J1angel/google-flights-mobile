@@ -91,16 +91,19 @@ google-flights-mobile/
 - Implemented `searchFlights` function
 - Added flight data interfaces
 - Integrated with Redux store
+- Added fallback mock data for development
 
 ### Step 3: Airport Autocomplete ✅
 - Implemented `getAirports` function
 - Added airport search functionality
 - Created airport selection UI
+- Added fallback airport data for development
 
 ### Step 4: Flight Display ✅
 - Created flight card components
 - Added flight selection functionality
 - Implemented error handling
+- Added loading states and user feedback
 
 ## Usage
 
@@ -115,8 +118,15 @@ google-flights-mobile/
 
 ## API Endpoints Used
 
-- `GET /flights/v2/quote` - Search for flights
-- `GET /flights/v2/autocomplete` - Search for airports
+### Primary Endpoints (v1)
+- `GET /flights/v1/quote` - Search for flights
+- `GET /flights/v1/autocomplete` - Search for airports
+
+### Fallback Endpoints
+- `GET /flights/quote` - Alternative flight search endpoint
+- `GET /flights/autocomplete` - Alternative airport search endpoint
+
+The app automatically tries fallback endpoints if the primary v1 endpoints are not available.
 
 ## Technologies Used
 
@@ -132,8 +142,14 @@ google-flights-mobile/
 ### Common Issues
 
 1. **API Key Error**: Make sure you've replaced the placeholder API key in `src/config/api.ts`
-2. **Metro Bundler Issues**: Try clearing the cache with `npx expo start --clear`
-3. **Navigation Errors**: Ensure Expo Router is properly configured
+2. **API Rate Limiting (429)**: The Sky Scrapper API has rate limits. The app includes fallback data for development
+3. **API Endpoint Issues (404)**: Some endpoints may not be available. The app includes fallback data for development
+4. **Metro Bundler Issues**: Try clearing the cache with `npx expo start --clear`
+5. **Navigation Errors**: Ensure Expo Router is properly configured
+
+### Development Mode
+
+The app includes fallback mock data for airports and flights when the API is not available or when you haven't configured your API key. This allows you to test the app functionality without setting up the API immediately.
 
 ### Getting Help
 

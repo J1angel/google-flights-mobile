@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { getAirports } from '../src/services/flightsApi';
 import DatePicker from '../src/components/DatePicker';
 import LoadingSpinner from '../src/components/LoadingSpinner';
+import ApiStatus from '../src/components/ApiStatus';
+import { API_CONFIG } from '../src/config/api';
 
 interface Airport {
   entityId: string;
@@ -30,6 +32,7 @@ export default function Home() {
   const [airports, setAirports] = useState<Airport[]>([]);
   const [showOriginAirports, setShowOriginAirports] = useState(false);
   const [showDestinationAirports, setShowDestinationAirports] = useState(false);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -41,6 +44,10 @@ export default function Home() {
     try {
       const results = await getAirports(query);
       setAirports(results);
+      // Check if we're using fallback data
+      if (results.length > 0 && results[0].entityId?.includes('-sky')) {
+        setIsUsingFallback(true);
+      }
     } catch (error) {
       console.error('Error searching airports:', error);
     }
@@ -110,6 +117,11 @@ export default function Home() {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Welcome, {auth.user?.name}!</Text>
+      
+      <ApiStatus 
+        isUsingFallback={isUsingFallback} 
+        apiKeyConfigured={API_CONFIG.RAPIDAPI_KEY !== 'YOUR_RAPIDAPI_KEY'} 
+      />
       
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Account</Text>
