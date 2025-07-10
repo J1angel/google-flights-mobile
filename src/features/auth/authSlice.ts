@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface User {
   id: string;
-  email: string;
+  username: string;
   name: string;
 }
 
@@ -19,7 +19,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   isLoading: false,
   error: null,
-  isSignUpMode: true, // Start in sign-up mode
+  isSignUpMode: true,
 };
 
 const authSlice = createSlice({

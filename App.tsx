@@ -23,12 +23,15 @@ function ReduxDemo() {
 
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    username: '',
     password: '',
   });
 
+  console.log('Auth state:', auth);
+  console.log('User object:', auth.user);
+
   const handleSignUp = () => {
-    if (!formData.name || !formData.email || !formData.password) {
+    if (!formData.name || !formData.username || !formData.password) {
       dispatch(signUpFailure('Please fill in all fields'));
       return;
     }
@@ -40,29 +43,33 @@ function ReduxDemo() {
 
     dispatch(signUpStart());
     setTimeout(() => {
-      dispatch(signUpSuccess({
+      const userData = {
         id: '1',
-        email: formData.email,
+        username: formData.username,
         name: formData.name
-      }));
-      setFormData({ name: '', email: '', password: '' });
+      };
+      console.log('Signing up with:', userData);
+      dispatch(signUpSuccess(userData));
+      setFormData({ name: '', username: '', password: '' });
     }, 1000);
   };
 
   const handleLogin = () => {
-    if (!formData.email || !formData.password) {
-      dispatch(loginFailure('Please fill in email and password'));
+    if (!formData.username || !formData.password) {
+      dispatch(loginFailure('Please fill in username and password'));
       return;
     }
 
     dispatch(loginStart());
     setTimeout(() => {
-      dispatch(loginSuccess({
+      const userData = {
         id: '1',
-        email: formData.email,
+        username: formData.username,
         name: 'John Doe'
-      }));
-      setFormData({ name: '', email: '', password: '' });
+      };
+      console.log('Logging in with:', userData);
+      dispatch(loginSuccess(userData));
+      setFormData({ name: '', username: '', password: '' });
     }, 1000);
   };
 
@@ -87,7 +94,7 @@ function ReduxDemo() {
 
   const toggleMode = () => {
     dispatch(setSignUpMode(!auth.isSignUpMode));
-    setFormData({ name: '', email: '', password: '' });
+    setFormData({ name: '', username: '', password: '' });
   };
 
   if (!auth.isAuthenticated) {
@@ -112,13 +119,13 @@ function ReduxDemo() {
           )}
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
+            <Text style={styles.label}>Username</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter your email"
-              value={formData.email}
-              onChangeText={(text) => setFormData({ ...formData, email: text })}
-              keyboardType="email-address"
+              placeholder="Enter your username"
+              value={formData.username}
+              onChangeText={(text) => setFormData({ ...formData, username: text })}
+              keyboardType="default"
               autoCapitalize="none"
             />
           </View>
@@ -167,7 +174,8 @@ function ReduxDemo() {
       
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Account</Text>
-        <Text style={styles.text}>Email: {auth.user?.email}</Text>
+        <Text style={styles.text}>Username: {auth.user?.username || 'Not set'}</Text>
+        <Text style={styles.text}>User ID: {auth.user?.id || 'Not set'}</Text>
         <Button title="Logout" onPress={handleLogout} />
       </View>
 
