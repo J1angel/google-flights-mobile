@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, Alert, StyleSheet } from 'react-native';
 
 interface CalendarPickerProps {
   value: string;
@@ -108,77 +108,232 @@ export default function CalendarPicker({ value, onChange, placeholder = "Select 
         animationType="slide"
         onRequestClose={() => setIsVisible(false)}
       >
-        <View className="flex-1 bg-black/50 justify-center items-center">
-          <View className="bg-white rounded-xl p-5 w-11/12 max-w-sm">
-            <Text className="text-lg font-bold text-center mb-5 text-gray-800">Select Travel Date</Text>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Travel Date</Text>
             
             {/* Calendar Header */}
-            <View className="flex-row items-center justify-between mb-5">
-              <TouchableOpacity onPress={goToPreviousMonth} className="w-10 h-10 justify-center items-center rounded-full bg-gray-100">
-                <Text className="text-xl font-bold text-gray-800">‹</Text>
+            <View style={styles.calendarHeader}>
+              <TouchableOpacity 
+                onPress={goToPreviousMonth} 
+                style={styles.navButton}
+              >
+                <Text style={styles.navButtonText}>‹</Text>
               </TouchableOpacity>
               
-              <View className="items-center">
-                <Text className="text-lg font-bold text-gray-800">{monthName}</Text>
-                <TouchableOpacity onPress={goToToday} className="mt-1 px-3 py-1 bg-blue-600 rounded-xl">
-                  <Text className="text-xs text-white font-semibold">Today</Text>
+              <View style={styles.monthContainer}>
+                <Text style={styles.monthText}>{monthName}</Text>
+                <TouchableOpacity 
+                  onPress={goToToday} 
+                  style={styles.todayButton}
+                >
+                  <Text style={styles.todayButtonText}>Today</Text>
                 </TouchableOpacity>
               </View>
               
-              <TouchableOpacity onPress={goToNextMonth} className="w-10 h-10 justify-center items-center rounded-full bg-gray-100">
-                <Text className="text-xl font-bold text-gray-800">›</Text>
+              <TouchableOpacity 
+                onPress={goToNextMonth} 
+                style={styles.navButton}
+              >
+                <Text style={styles.navButtonText}>›</Text>
               </TouchableOpacity>
             </View>
 
             {/* Day Names */}
-            <View className="flex-row mb-2.5">
+            <View style={styles.dayNamesContainer}>
               {dayNames.map((day, index) => (
-                <Text key={index} className="flex-1 text-center text-sm font-semibold text-gray-600">{day}</Text>
+                <View key={index} style={styles.dayNameCell}>
+                  <Text style={styles.dayNameText}>{day}</Text>
+                </View>
               ))}
             </View>
 
             {/* Calendar Grid */}
-            <View className="flex-row flex-wrap mb-5">
+            <View style={styles.calendarGrid}>
               {days.map((day, index) => (
-                <View key={index} className="w-1/7 aspect-square p-0.5">
+                <View key={index} style={styles.dayCell}>
                   {day ? (
                     <TouchableOpacity
-                      className={`flex-1 justify-center items-center rounded-lg ${
-                        isToday(day) ? 'bg-orange-50 border-2 border-orange-500' : ''
-                      } ${
-                        isSelected(day) ? 'bg-blue-600' : ''
-                      } ${
-                        isPast(day) ? 'bg-gray-100' : 'bg-white'
-                      }`}
+                      style={[
+                        styles.dayButton,
+                        isToday(day) && styles.todayDayButton,
+                        isSelected(day) && styles.selectedButton,
+                        isPast(day) && styles.pastButton
+                      ]}
                       onPress={() => selectDate(day)}
                       disabled={isPast(day)}
                     >
-                      <Text className={`text-base ${
-                        isToday(day) ? 'text-orange-500 font-bold' : ''
-                      } ${
-                        isSelected(day) ? 'text-white font-bold' : ''
-                      } ${
-                        isPast(day) ? 'text-gray-300' : 'text-gray-800'
-                      }`}>
+                      <Text style={[
+                        styles.dayText,
+                        isToday(day) && styles.todayText,
+                        isSelected(day) && styles.selectedText,
+                        isPast(day) && styles.pastText
+                      ]}>
                         {day.getDate()}
                       </Text>
                     </TouchableOpacity>
                   ) : (
-                    <View className="flex-1" />
+                    <View style={styles.emptyCell} />
                   )}
                 </View>
               ))}
             </View>
 
             <TouchableOpacity
-              className="mt-4 p-4 bg-gray-50 rounded-lg items-center"
+              style={styles.cancelButton}
               onPress={() => setIsVisible(false)}
             >
-              <Text className="text-base text-gray-600">Cancel</Text>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
     </View>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 24,
+    color: '#1f2937',
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  navButton: {
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 24,
+    backgroundColor: '#f3f4f6',
+  },
+  navButtonText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1f2937',
+  },
+  monthContainer: {
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: 16,
+  },
+  monthText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1f2937',
+  },
+  todayButton: {
+    marginTop: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#2563eb',
+    borderRadius: 8,
+  },
+  todayButtonText: {
+    fontSize: 14,
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+  dayNamesContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  dayNameCell: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  dayNameText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 24,
+  },
+  dayCell: {
+    width: '14.28%',
+    height: 48,
+    marginBottom: 8,
+  },
+  dayButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    marginHorizontal: 2,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  todayDayButton: {
+    backgroundColor: '#fef3c7',
+    borderWidth: 2,
+    borderColor: '#f59e0b',
+  },
+  selectedButton: {
+    backgroundColor: '#2563eb',
+    borderColor: '#2563eb',
+  },
+  pastButton: {
+    backgroundColor: '#f3f4f6',
+    borderColor: '#f3f4f6',
+  },
+  dayText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#1f2937',
+    textAlign: 'center',
+  },
+  todayText: {
+    color: '#d97706',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  selectedText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  pastText: {
+    color: '#9ca3af',
+    textAlign: 'center',
+  },
+  emptyCell: {
+    flex: 1,
+    marginHorizontal: 2,
+  },
+  cancelButton: {
+    padding: 16,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    color: '#374151',
+    fontWeight: '500',
+  },
+}); 
